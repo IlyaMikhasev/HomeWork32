@@ -24,9 +24,13 @@ int main() {
 	int* pn = &n;
 	//задача 1.функция на переадресовку указателя , на двумерный массив
 	std::cout << "Задача 1\nВведите два числа: высоту и длинну двумерного массива -> ";
-	std::cin >> n >> m;
-	forwarding(&pn, n, m);	
-
+	try{
+		std::cin >> n >> m;
+		forwarding(&pn, n, m);
+	}
+	catch (const std::out_of_range& ex){
+		std::cout << "Ошибка: " << ex.what() << '\n';
+	}
 	//Задача 2. Функция меняет искомый на заданный символ в строке
 	std::cout << "\nЗадача 2.\nВведите строку -> ";
 	std::string str;
@@ -58,6 +62,8 @@ int main() {
 //направляет указатель на двумерный массив
 template <typename T>
 void forwarding(T** ppn, int num1, int num2) {
+	if (num1 <= 0 || num2 <= 0)
+		throw std::out_of_range("Длинны массива должны быть положительными!");
 	T** arr = new T*[num1];
 	for (int i = 0; i < num1; i++)
 		arr[i] = new T[num2];
