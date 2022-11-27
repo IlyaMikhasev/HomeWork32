@@ -10,23 +10,28 @@ struct route {
 	int price_ticket = 18;
 }bus, tram{25,"трамвай","Дворец молодежи","ЖБИ"};
 template <typename T>
-void fill_arr(T arr[], const int length, T begin, T end);
+void delArr(T**& arr, int num1, int num2);
 template <typename T>
-void show_arr(T arr[], const int length);
+void FillArr(T**& arr, int num1, int num2, int begin, int end);
 template <typename T>
-void forwarding(T** ppn, int num1, int num2);
+void show_arr(T** &arr,int num1,int num2);
+template <typename T>
+void forwarding(T** &ppn, int num1, int num2);
 void insert_sym(std::string& str, char sym1, char sym2);
-void show_trans(route object);
-inline int fare(route object, int num_pers);
+void show_trans(route &object);
+inline int fare(route &object, int num_pers);
 int main() {
 	setlocale(LC_ALL, "Russian");
 	int n, m;
-	int* pn = &n;
+	int** Arr = nullptr;
 	//задача 1.функция на переадресовку указателя , на двумерный массив
 	std::cout << "Задача 1\nВведите два числа: высоту и длинну двумерного массива -> ";
 	try{
-		std::cin >> n >> m;
-		forwarding(&pn, n, m);
+		std::cin >> n >> m; 
+		forwarding(Arr, n, m);
+		FillArr(Arr, n, m, 10, 50);		
+		show_arr(Arr, n, m);
+		delArr(Arr, n, m);
 	}
 	catch (const std::out_of_range& ex){
 		std::cout << "Ошибка: " << ex.what() << '\n';
@@ -60,14 +65,20 @@ int main() {
 	return 0;
 }
 //направляет указатель на двумерный массив
+
 template <typename T>
-void forwarding(T** ppn, int num1, int num2) {
+void forwarding(T** &arr, int num1, int num2) {
 	if (num1 <= 0 || num2 <= 0)
 		throw std::out_of_range("Длинны массива должны быть положительными!");
-	T** arr = new T*[num1];
+	arr = new T*[num1];
 	for (int i = 0; i < num1; i++)
 		arr[i] = new T[num2];
-	ppn = arr;
+}
+template <typename T>
+void delArr(T**& arr, int num1, int num2) {	
+	for (int i = 0; i < num1; i++)
+		delete[] arr[i];
+	delete[] arr;
 }
 //Меняет символы в строке
 void insert_sym(std::string& str, char sym1, char sym2) {
@@ -76,7 +87,7 @@ void insert_sym(std::string& str, char sym1, char sym2) {
 			str[i] = sym2;
 }
 //выводит информацию о объкте структуры
-void show_trans(route object) {
+void show_trans(route &object) {
 	std::cout << "Номер маршрута = " << object.number << '\n';
 	std::cout << "Вид транспорта = " << object._type_trans << '\n';
 	std::cout << "Остановка отправления = " << object._trans_stop_begin << '\n';
@@ -84,21 +95,26 @@ void show_trans(route object) {
 	std::cout << "Стоимость проезда = " << object.price_ticket <<'\n' << std::endl;
 }
 //вычислает стоимость проезда на группу людей
-inline int fare(route object, int num_pers) {
+inline int fare(route &object, int num_pers) {
 	return object.price_ticket * num_pers;
 }
 //вывод массива
 template <typename T>
-void show_arr(T arr[], const int length) {
-	std::cout << "[";
-	for (int i = 0; i < length; i++)
-		std::cout << arr[i] << ", ";
-	std::cout << "\b\b]\n";
+void show_arr(T** &arr,int num1,int num2) {
+	for (int i = 0; i < num1; i++) {
+		std::cout << "[";
+		for (int j = 0; j < num2; j++)
+			std::cout << arr[i][j] << ", ";
+		std::cout << "\b\b]\n";
+	}
+	std::cout << "\n";
 }
 //заполнение массива
 template <typename T>
-void fill_arr(T arr[], const int length, T begin, T end) {
+void FillArr(T** &arr,int num1,int num2, int begin, int end)
+{
 	srand(time(NULL));
-	for (int i = 0; i < length; i++)
-		arr[i] = begin + rand() % (begin - end);
+	for (int i = 0; i < num1; i++)
+		for (int j = 0; j < num2; j++)
+			arr[i][j] =begin+ rand() % (end-begin);
 }
